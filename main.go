@@ -8,10 +8,10 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4"
 	"github.com/google/go-github/v32/github"
 	"github.com/tcnksm/go-gitconfig"
 	"golang.org/x/oauth2"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 var (
@@ -64,12 +64,11 @@ func repoRemoteInfo() (string, string, string) {
 	}
 
 	url := remote.Config().URLs[0]
-	u := strings.Split(url, "@")[0]
-	v := strings.SplitN(u, ":", 2)
+	v := strings.Split(url, "://")[1]
 
-	domain, path := v[0], v[1]
-	v = strings.SplitN(path, "/", 2)
-	org, repo := v[0], strings.TrimRight(v[1], ".git")
+	domain := strings.SplitN(v, "/", 2)[0]
+	org := strings.SplitN(v, "/", 2)[1]
+	repo := strings.TrimRight(org, ".git")
 
 	return domain, org, repo
 }
@@ -91,13 +90,16 @@ func getURL(branch string) {
 
 	client := github.NewClient(tc)
 
+	// debug
+	fmt.Println(org + ":" + branch)
+
 	pulls, _, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
 		State: "open",
-		Head: org + ":" + branch,
+		Head:  org + ":" + branch,
 	})
-
+	
+	// debug
 	fmt.Println(pulls)
-	fmt.Println(domain, org, repo)
 }
 
 func main() {
@@ -108,6 +110,9 @@ func main() {
 	switch mode {
 	case "current":
 		fmt.Println("branch: " + getCurrentBranch())
+		// debug
+		// fmt.Println(repoRemoteInfo())
+
 		getURL(getCurrentBranch())
 
 	case "all":
@@ -116,4 +121,3 @@ func main() {
 		fmt.Println("ccc")
 	}
 }
-
