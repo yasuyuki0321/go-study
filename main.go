@@ -8,10 +8,10 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4"
 	"github.com/google/go-github/v32/github"
 	"github.com/tcnksm/go-gitconfig"
 	"golang.org/x/oauth2"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 var (
@@ -93,7 +93,7 @@ func getURL(branch string) {
 
 	pulls, _, err := client.PullRequests.List(ctx, org, repo, &github.PullRequestListOptions{
 		State: "open",
-		Head: org + ":" + branch,
+		Head:  org + ":" + branch,
 	})
 
 	fmt.Println(pulls)
@@ -116,4 +116,3 @@ func main() {
 		fmt.Println("ccc")
 	}
 }
-
